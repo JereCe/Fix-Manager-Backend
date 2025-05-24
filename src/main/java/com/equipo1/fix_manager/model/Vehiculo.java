@@ -22,7 +22,8 @@ public class Vehiculo {
     private Integer anio;
 
     @ManyToOne
-    private UsuarioCliente propietario;
+    @JoinColumn(name = "usuario_cliente_id")
+    private UsuarioCliente usuarioCliente;
 
     @OneToOne(mappedBy = "vehiculo", cascade = CascadeType.ALL)
     private Historial historial;
@@ -30,13 +31,13 @@ public class Vehiculo {
     public Vehiculo() {
     }
 
-    public Vehiculo(Long id, String modelo, String marca, String patente, Integer anio, UsuarioCliente propietario, Historial historial) {
+    public Vehiculo(Long id, String modelo, String marca, String patente, Integer anio, UsuarioCliente usuarioCliente, Historial historial) {
         this.id = id;
         this.modelo = modelo;
         this.marca = marca;
         this.patente = patente;
         this.anio = anio;
-        this.propietario = propietario;
+        this.usuarioCliente = usuarioCliente;
         this.historial = historial;
     }
 }

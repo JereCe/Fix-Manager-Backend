@@ -26,8 +26,9 @@ public class UsuarioCliente {
     private String documento;
 
 
-    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuarioCliente", cascade = CascadeType.ALL)
     private List<Vehiculo> vehiculos;
+
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Turno> turnos;

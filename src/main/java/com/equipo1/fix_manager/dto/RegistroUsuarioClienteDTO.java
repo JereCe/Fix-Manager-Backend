@@ -12,5 +12,5 @@ public class RegistroUsuarioClienteDTO {
     private String email;
     private String contrasenia;
 
-    // Getters y Setters
+
 }

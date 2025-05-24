@@ -9,5 +9,5 @@ public class LoginDTO {
     private String email;
     private String contrasenia;
 
-    // Getters y setters
+
 }

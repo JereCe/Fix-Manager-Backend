@@ -1,6 +1,7 @@
 package com.equipo1.fix_manager.controller;
 
 import com.equipo1.fix_manager.dto.LoginDTO;
+import com.equipo1.fix_manager.dto.LoginResponseDTO;
 import com.equipo1.fix_manager.dto.RegistroUsuarioClienteDTO;
 import com.equipo1.fix_manager.model.UsuarioCliente;
 import com.equipo1.fix_manager.service.IUsuarioClienteService;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/clientes")
-@CrossOrigin(origins = "*") // habilitado para React Native
+@CrossOrigin(origins = "*")
 public class UsuarioClienteController {
 
     @Autowired
@@ -21,7 +22,7 @@ public class UsuarioClienteController {
     }
 
     @PostMapping("/login")
-    public UsuarioCliente login(@RequestBody LoginDTO datos) {
+    public LoginResponseDTO login(@RequestBody LoginDTO datos) {
         return usuarioService.login(datos);
     }
 }
