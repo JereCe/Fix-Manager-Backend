@@ -1,13 +1,13 @@
 package com.equipo1.fix_manager.service;
 
 
-import com.equipo1.fix_manager.repository.IVehiculoRepository;
+import com.equipo1.fix_manager.repository.IHistorialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VehiculoService {
+public class HistorialService {
 
     @Autowired
-    private IVehiculoRepository vehiculoRepo;
+    private IHistorialRepository historialRepo;
 }

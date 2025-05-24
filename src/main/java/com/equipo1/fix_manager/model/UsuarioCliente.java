@@ -1,30 +1,33 @@
 package com.equipo1.fix_manager.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-@Getter@Setter
+
+@Getter
+@Setter
 @Entity
 public class UsuarioCliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
     private String email;
+
     private String contrasenia;
 
     private String nombre;
 
     private String apellido;
 
-     private List<Vehiculo> vehiculos;
+    @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL)
+    private List<Vehiculo> vehiculos;
 
-     private List<Turno> turnos;
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Turno> turnos;
 
     public UsuarioCliente() {
     }
@@ -38,6 +41,4 @@ public class UsuarioCliente {
         this.vehiculos = vehiculos;
         this.turnos = turnos;
     }
-
-
 }

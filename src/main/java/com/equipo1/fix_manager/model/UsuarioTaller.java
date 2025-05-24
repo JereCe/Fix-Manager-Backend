@@ -1,29 +1,29 @@
 package com.equipo1.fix_manager.model;
 
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter@Setter
+@Getter
+@Setter
 @Entity
 public class UsuarioTaller {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
     private String email;
+
     private String contrasenia;
 
     private String nombre;
 
     private String apellido;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "taller_id")
     private Taller taller;
-
 
     public UsuarioTaller() {
     }
