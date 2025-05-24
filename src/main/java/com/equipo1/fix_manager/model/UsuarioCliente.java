@@ -23,6 +23,9 @@ public class UsuarioCliente {
 
     private String apellido;
 
+    private String documento;
+
+
     @OneToMany(mappedBy = "propietario", cascade = CascadeType.ALL)
     private List<Vehiculo> vehiculos;
 
@@ -32,12 +35,13 @@ public class UsuarioCliente {
     public UsuarioCliente() {
     }
 
-    public UsuarioCliente(Long id, String email, String contrasenia, String nombre, String apellido, List<Vehiculo> vehiculos, List<Turno> turnos) {
+    public UsuarioCliente(Long id, String email, String contrasenia, String nombre, String apellido, String documento, List<Vehiculo> vehiculos, List<Turno> turnos) {
         this.id = id;
         this.email = email;
         this.contrasenia = contrasenia;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.documento = documento;
         this.vehiculos = vehiculos;
         this.turnos = turnos;
     }
