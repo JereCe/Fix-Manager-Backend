@@ -51,4 +51,16 @@ public class UsuarioTallerController {
         return ResponseEntity.ok(dto);
     }
 
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<Void> actualizarTallerista(@PathVariable Long id, @RequestBody EditarUsuarioDTO datos) {
+        usuarioTallerService.actualizarUsuario(id, datos);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/modificar")
+    public ResponseEntity<Void> actualizarTaller(@PathVariable Long id, @RequestBody CrearTallerDTO datos) {
+        usuarioTallerService.actualizarTaller(id, datos);
+        return ResponseEntity.ok().build(); // 200 OK
+    }
+
 }

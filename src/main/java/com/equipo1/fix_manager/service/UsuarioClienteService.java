@@ -1,6 +1,7 @@
 package com.equipo1.fix_manager.service;
 
 
+import com.equipo1.fix_manager.dto.EditarUsuarioDTO;
 import com.equipo1.fix_manager.dto.LoginDTO;
 import com.equipo1.fix_manager.dto.LoginResponseDTO;
 import com.equipo1.fix_manager.dto.RegistroUsuarioClienteDTO;
@@ -53,5 +54,19 @@ public class UsuarioClienteService implements IUsuarioClienteService {
     public boolean existePorEmail(String email) {
         return usuarioClienteRepo.existsByEmail(email);
     }
+
+    @Override
+    public void actualizarUsuario(Long id, EditarUsuarioDTO datos) {
+        UsuarioCliente usuario = usuarioClienteRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario cliente no encontrado."));
+
+        usuario.setNombre(datos.getNombre());
+        usuario.setApellido(datos.getApellido());
+        usuario.setContrasenia(datos.getContrasenia());
+
+        usuarioClienteRepo.save(usuario);
+    }
+
+
 
 }

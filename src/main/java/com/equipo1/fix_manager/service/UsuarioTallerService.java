@@ -89,4 +89,36 @@ public class UsuarioTallerService implements IUsuarioTallerService {
     public boolean existePorEmail(String email) {
         return usuarioTallerRepository.existsByEmail(email);
     }
+
+    @Override
+    public void actualizarUsuario(Long id, EditarUsuarioDTO datos) {
+        UsuarioTaller usuario = usuarioTallerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario taller no encontrado."));
+
+        usuario.setNombre(datos.getNombre());
+        usuario.setApellido(datos.getApellido());
+        usuario.setContrasenia(datos.getContrasenia());
+
+        usuarioTallerRepository.save(usuario);
+    }
+
+    @Override
+    public void actualizarTaller(Long usuarioId, CrearTallerDTO datos) {
+        UsuarioTaller usuario = usuarioTallerRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        Taller taller = usuario.getTaller();
+
+        if (taller == null) {
+            throw new IllegalStateException("El usuario aún no tiene un taller registrado.");
+        }
+
+        taller.setDescripcion(datos.getDescripcion());
+        taller.setUbicacion(datos.getUbicacion());
+        taller.setImagenLogo(datos.getImagenLogo());
+
+        tallerRepository.save(taller);
+    }
+
+
 }

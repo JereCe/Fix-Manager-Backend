@@ -1,5 +1,6 @@
 package com.equipo1.fix_manager.service;
 
+import com.equipo1.fix_manager.dto.EditarUsuarioDTO;
 import com.equipo1.fix_manager.dto.LoginDTO;
 import com.equipo1.fix_manager.dto.LoginResponseDTO;
 import com.equipo1.fix_manager.dto.RegistroUsuarioClienteDTO;
@@ -12,5 +13,7 @@ public interface IUsuarioClienteService {
     LoginResponseDTO login(LoginDTO datos);
 
     boolean existePorEmail(String email);
+
+    void actualizarUsuario(Long id, EditarUsuarioDTO datos);
 
 }

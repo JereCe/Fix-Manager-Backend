@@ -14,7 +14,9 @@ public interface IUsuarioTallerService {
 
     TallerResponseDTO obtenerOTallerDeUsuario(Long usuarioTallerId);
 
-
+    void actualizarUsuario(Long id, EditarUsuarioDTO datos);
 
     boolean existePorEmail(String email);
+
+    void actualizarTaller(Long usuarioId, CrearTallerDTO datos);
 }
