@@ -11,4 +11,6 @@ public interface IUsuarioClienteService {
 
     LoginResponseDTO login(LoginDTO datos);
 
+    boolean existePorEmail(String email);
+
 }

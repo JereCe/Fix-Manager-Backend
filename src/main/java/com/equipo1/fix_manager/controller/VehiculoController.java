@@ -23,11 +23,18 @@ public class VehiculoController {
     @PostMapping
     public ResponseEntity<MensajeRespuestaDTO> crearVehiculo(@RequestBody VehiculoDTO datos) {
         vehiculoService.crearVehiculo(datos);
-        return ResponseEntity.ok(new MensajeRespuestaDTO("Vehículo creado correctamente."));
+        return ResponseEntity.status(201).body(new MensajeRespuestaDTO("Vehículo creado correctamente."));
+
     }
 
     @GetMapping("/usuario/{id}")
-    public List<VehiculoResponseDTO> obtenerVehiculosDeUsuario(@PathVariable Long id) {
-        return vehiculoService.obtenerVehiculosPorUsuario(id);
+    public ResponseEntity<?> obtenerVehiculosDeUsuario(@PathVariable Long id) {
+        List<VehiculoResponseDTO> vehiculos = vehiculoService.obtenerVehiculosPorUsuario(id);
+
+        if (vehiculos.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 No Content
+        }
+
+        return ResponseEntity.ok(vehiculos); // 200 OK
     }
 }

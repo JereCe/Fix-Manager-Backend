@@ -4,11 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Getter
-@Setter
+@Getter @Setter
 @Entity
 public class Taller {
 
@@ -16,37 +12,23 @@ public class Taller {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    private String descripcion;
+    private String ubicacion;
+    private String imagenLogo;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "agenda_id")
     private Agenda agenda;
 
-    private Float calificacion;
-
-    private String descripcion;
-
-    private String ubicacion;
-
-    @ManyToMany
-    @JoinTable(
-            name = "taller_etiqueta",
-            joinColumns = @JoinColumn(name = "taller_id"),
-            inverseJoinColumns = @JoinColumn(name = "etiqueta_id")
-    )
-    private List<Etiqueta> etiquetas = new ArrayList<>();
 
     public Taller() {
     }
 
-    public Taller(Long id, Agenda agenda, Float calificacion, String descripcion, String ubicacion, List<Etiqueta> etiquetas) {
+    public Taller(Long id, String descripcion, String ubicacion, String imagenLogo, Agenda agenda) {
         this.id = id;
-        this.agenda = agenda;
-        this.calificacion = calificacion;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
-        this.etiquetas = etiquetas;
-
-
+        this.imagenLogo = imagenLogo;
+        this.agenda = agenda;
     }
-
-
 }

@@ -44,6 +44,7 @@ public class UsuarioClienteService implements IUsuarioClienteService {
         }
 
         UsuarioCliente usuario = usuarioOpt.get();
+
         if (!usuario.getContrasenia().equals(datos.getContrasenia())) {
             return new LoginResponseDTO(false, "Contraseña incorrecta.");
         }
@@ -51,5 +52,9 @@ public class UsuarioClienteService implements IUsuarioClienteService {
         return new LoginResponseDTO(true, "Login exitoso.");
     }
 
+    @Override
+    public boolean existePorEmail(String email) {
+        return usuarioClienteRepo.existsByEmail(email);
+    }
 
 }
