@@ -21,39 +21,17 @@ public class UsuarioClienteController {
 
     @PostMapping("/registro")
     public ResponseEntity<?> registrar(@RequestBody RegistroUsuarioClienteDTO datos) {
-        try {
-            if (usuarioService.existePorEmail(datos.getEmail())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new MensajeRespuestaDTO("El email ya está registrado."));
-            }
-
-            usuarioService.registrarUsuario(datos);
-            return ResponseEntity.status(HttpStatus.CREATED).build(); // solo código 201
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new MensajeRespuestaDTO("Error al registrar usuario."));
+        if (usuarioService.existePorEmail(datos.getEmail())) {
+            throw new IllegalStateException("El email ya está registrado.");
         }
+
+        usuarioService.registrarUsuario(datos);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO datos) {
-        try {
-            LoginResponseDTO respuesta = usuarioService.login(datos);
-
-            if (!respuesta.isLoginExitoso()) {
-                if ("Usuario no encontrado.".equals(respuesta.getMensaje())) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
-                } else {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
-                }
-            }
-
-            return ResponseEntity.ok(respuesta); // 200 OK si loginExitoso es true
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new LoginResponseDTO(false, "Error inesperado al iniciar sesión."));
-        }
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO datos) {
+        LoginResponseDTO respuesta = usuarioService.login(datos);
+        return ResponseEntity.ok(respuesta); // 200 OK
     }
 }

@@ -1,6 +1,7 @@
 package com.equipo1.fix_manager.service;
 
 import com.equipo1.fix_manager.dto.*;
+import com.equipo1.fix_manager.exception.UnauthorizedException;
 import com.equipo1.fix_manager.model.Agenda;
 import com.equipo1.fix_manager.model.Taller;
 import com.equipo1.fix_manager.model.UsuarioTaller;
@@ -32,14 +33,11 @@ public class UsuarioTallerService implements IUsuarioTallerService {
 
     @Override
     public LoginResponseDTO login(LoginDTO datos) {
-        Optional<UsuarioTaller> opt = usuarioTallerRepository.findByEmail(datos.getEmail());
-
-        if (opt.isEmpty()) return new LoginResponseDTO(false, "Usuario no encontrado.");
-
-        UsuarioTaller usuario = opt.get();
+        UsuarioTaller usuario = usuarioTallerRepository.findByEmail(datos.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
 
         if (!usuario.getContrasenia().equals(datos.getContrasenia())) {
-            return new LoginResponseDTO(false, "Contraseña incorrecta.");
+            throw new UnauthorizedException("Contraseña incorrecta.");
         }
 
         return new LoginResponseDTO(true, "Login exitoso.");
@@ -64,7 +62,6 @@ public class UsuarioTallerService implements IUsuarioTallerService {
         taller.setAgenda(agenda);
 
         Taller guardado = tallerRepository.save(taller);
-
         usuario.setTaller(guardado);
         usuarioTallerRepository.save(usuario);
 

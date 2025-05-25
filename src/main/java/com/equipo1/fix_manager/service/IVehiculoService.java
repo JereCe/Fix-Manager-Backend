@@ -11,4 +11,8 @@ public interface IVehiculoService {
     Vehiculo crearVehiculo(VehiculoDTO datos);
 
     List<VehiculoResponseDTO> obtenerVehiculosPorUsuario(Long usuarioId);
+
+    void actualizarVehiculo(Long id, VehiculoDTO datos);
+
+    void eliminarVehiculo(Long id);
 }

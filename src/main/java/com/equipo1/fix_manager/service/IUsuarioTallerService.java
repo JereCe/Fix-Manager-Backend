@@ -14,5 +14,7 @@ public interface IUsuarioTallerService {
 
     TallerResponseDTO obtenerOTallerDeUsuario(Long usuarioTallerId);
 
+
+
     boolean existePorEmail(String email);
 }

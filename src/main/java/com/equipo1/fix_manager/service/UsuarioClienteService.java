@@ -4,6 +4,7 @@ package com.equipo1.fix_manager.service;
 import com.equipo1.fix_manager.dto.LoginDTO;
 import com.equipo1.fix_manager.dto.LoginResponseDTO;
 import com.equipo1.fix_manager.dto.RegistroUsuarioClienteDTO;
+import com.equipo1.fix_manager.exception.UnauthorizedException;
 import com.equipo1.fix_manager.model.UsuarioCliente;
 import com.equipo1.fix_manager.repository.IUsuarioClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +38,12 @@ public class UsuarioClienteService implements IUsuarioClienteService {
 
     @Override
     public LoginResponseDTO login(LoginDTO datos) {
-        Optional<UsuarioCliente> usuarioOpt = usuarioClienteRepo.findByEmail(datos.getEmail());
-
-        if (usuarioOpt.isEmpty()) {
-            return new LoginResponseDTO(false, "Usuario no encontrado.");
-        }
-
-        UsuarioCliente usuario = usuarioOpt.get();
+        UsuarioCliente usuario = usuarioClienteRepo.findByEmail(datos.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
 
         if (!usuario.getContrasenia().equals(datos.getContrasenia())) {
-            return new LoginResponseDTO(false, "Contraseña incorrecta.");
+            throw new UnauthorizedException("Contraseña incorrecta.");
+
         }
 
         return new LoginResponseDTO(true, "Login exitoso.");

@@ -23,26 +23,47 @@ public class VehiculoService implements IVehiculoService {
 
     @Override
     public Vehiculo crearVehiculo(VehiculoDTO datos) {
-        UsuarioCliente usuario = usuarioClienteRepo.findById(datos.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        UsuarioCliente cliente = usuarioClienteRepo.findById(datos.getUsuarioId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario cliente no encontrado."));
 
         Vehiculo vehiculo = new Vehiculo();
         vehiculo.setMarca(datos.getMarca());
         vehiculo.setModelo(datos.getModelo());
         vehiculo.setPatente(datos.getPatente());
-        vehiculo.setUsuarioCliente(usuario);
+        vehiculo.setUsuarioCliente(cliente);
 
         return vehiculoRepo.save(vehiculo);
     }
 
     @Override
     public List<VehiculoResponseDTO> obtenerVehiculosPorUsuario(Long usuarioId) {
-        List<Vehiculo> vehiculos = vehiculoRepo.findByUsuarioCliente_Id(usuarioId);
+        List<Vehiculo> lista = vehiculoRepo.findByUsuarioCliente_Id(usuarioId);
 
-        return vehiculos.stream()
+        return lista.stream()
                 .map(v -> new VehiculoResponseDTO(v.getId(), v.getMarca(), v.getModelo(), v.getPatente()))
                 .toList();
     }
+
+    @Override
+    public void actualizarVehiculo(Long id, VehiculoDTO datos) {
+        Vehiculo vehiculo = vehiculoRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado."));
+
+        vehiculo.setMarca(datos.getMarca());
+        vehiculo.setModelo(datos.getModelo());
+        vehiculo.setPatente(datos.getPatente());
+
+        vehiculoRepo.save(vehiculo);
+    }
+
+    @Override
+    public void eliminarVehiculo(Long id) {
+        Vehiculo vehiculo = vehiculoRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado."));
+
+        vehiculoRepo.delete(vehiculo);
+    }
+
 
 
 

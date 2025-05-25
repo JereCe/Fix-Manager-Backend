@@ -7,6 +7,7 @@ import com.equipo1.fix_manager.model.Vehiculo;
 import com.equipo1.fix_manager.service.IVehiculoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +21,10 @@ public class VehiculoController {
     @Autowired
     private IVehiculoService vehiculoService;
 
-    @PostMapping
-    public ResponseEntity<MensajeRespuestaDTO> crearVehiculo(@RequestBody VehiculoDTO datos) {
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearVehiculo(@RequestBody VehiculoDTO datos) {
         vehiculoService.crearVehiculo(datos);
-        return ResponseEntity.status(201).body(new MensajeRespuestaDTO("Vehículo creado correctamente."));
-
+        return ResponseEntity.status(HttpStatus.CREATED).build(); // 201 sin body
     }
 
     @GetMapping("/usuario/{id}")
@@ -32,9 +32,21 @@ public class VehiculoController {
         List<VehiculoResponseDTO> vehiculos = vehiculoService.obtenerVehiculosPorUsuario(id);
 
         if (vehiculos.isEmpty()) {
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build(); // 204
         }
 
-        return ResponseEntity.ok(vehiculos); // 200 OK
+        return ResponseEntity.ok(vehiculos); // 200
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarVehiculo(@PathVariable Long id, @RequestBody VehiculoDTO datos) {
+        vehiculoService.actualizarVehiculo(id, datos);
+        return ResponseEntity.ok().build(); // 200 OK sin body
+    }
+
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<Void> eliminarVehiculo(@PathVariable Long id) {
+        vehiculoService.eliminarVehiculo(id);
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }
