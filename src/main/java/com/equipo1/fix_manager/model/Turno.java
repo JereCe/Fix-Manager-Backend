@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -38,10 +39,23 @@ public class Turno {
     @ManyToOne
     private Historial historial;
 
+    @Lob
+    private String descripcionTrabajo;
+
+    @ElementCollection
+    private List<String> imagenes;
+
+    @OneToMany(mappedBy = "turno", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TurnoEstadoHistorial> historialEstados;
+
+    @Column
+    private Integer calificacion;
+
+
     public Turno() {}
 
-    public Turno(Long id, LocalDate fecha, LocalTime hora, Vehiculo vehiculo, UsuarioCliente cliente, Agenda agenda,
-                 DisponibilidadTurno disponibilidad, Estado estado, Historial historial) {
+
+    public Turno(Long id, LocalDate fecha, LocalTime hora, Vehiculo vehiculo, UsuarioCliente cliente, Agenda agenda, DisponibilidadTurno disponibilidad, Estado estado, Historial historial, String descripcionTrabajo, List<String> imagenes, List<TurnoEstadoHistorial> historialEstados, Integer calificacion) {
         this.id = id;
         this.fecha = fecha;
         this.hora = hora;
@@ -51,5 +65,9 @@ public class Turno {
         this.disponibilidad = disponibilidad;
         this.estado = estado;
         this.historial = historial;
+        this.descripcionTrabajo = descripcionTrabajo;
+        this.imagenes = imagenes;
+        this.historialEstados = historialEstados;
+        this.calificacion = calificacion;
     }
 }

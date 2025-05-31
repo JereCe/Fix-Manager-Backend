@@ -53,6 +53,7 @@ public class UsuarioTallerService implements IUsuarioTallerService {
         }
 
         Taller taller = new Taller();
+        taller.setNombre(datos.getNombre());
         taller.setDescripcion(datos.getDescripcion());
         taller.setUbicacion(datos.getUbicacion());
         taller.setImagenLogo(datos.getImagenLogo());
@@ -81,9 +82,12 @@ public class UsuarioTallerService implements IUsuarioTallerService {
                 taller.getId(),
                 taller.getDescripcion(),
                 taller.getUbicacion(),
-                taller.getImagenLogo()
+                taller.getImagenLogo(),
+                taller.getPromedioCalificacion(),
+                taller.getCantidadCalificaciones()
         );
     }
+
 
     @Override
     public boolean existePorEmail(String email) {

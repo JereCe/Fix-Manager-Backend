@@ -1,7 +1,6 @@
 package com.equipo1.fix_manager.service;
 
-import com.equipo1.fix_manager.dto.CrearTurnoDTO;
-import com.equipo1.fix_manager.dto.TurnoResponseDTO;
+import com.equipo1.fix_manager.dto.*;
 
 import java.util.List;
 
@@ -13,4 +12,24 @@ public interface ITurnoService {
 
 
     void reservarTurno(Long turnoId, Long clienteId, Long vehiculoId);
+
+    List<TurnoReservadoDTO> obtenerTurnosPorCliente(Long clienteId);
+
+
+    List<TurnoReservadoDTO> obtenerTurnosPendientesDelTaller(Long tallerId);
+
+    void finalizarTurno(Long turnoId, FinalizarTurnoDTO datos);
+
+    List<HistorialTurnoDTO> obtenerHistorialPorVehiculo(Long vehiculoId);
+
+    List<TurnoDTO> obtenerTodosLosTurnosPorTaller(Long tallerId);
+
+    void calificarTurno(Long turnoId, CalificarTurnoDTO dto);
+
+
+    void cancelarTurnoPorCliente(Long turnoId);
+    void cancelarTurnoPorTaller(Long turnoId);
+
+
+
 }

@@ -3,8 +3,10 @@ package com.equipo1.fix_manager.service;
 
 import com.equipo1.fix_manager.dto.VehiculoDTO;
 import com.equipo1.fix_manager.dto.VehiculoResponseDTO;
+import com.equipo1.fix_manager.model.Historial;
 import com.equipo1.fix_manager.model.UsuarioCliente;
 import com.equipo1.fix_manager.model.Vehiculo;
+import com.equipo1.fix_manager.repository.IHistorialRepository;
 import com.equipo1.fix_manager.repository.IUsuarioClienteRepository;
 import com.equipo1.fix_manager.repository.IVehiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class VehiculoService implements IVehiculoService {
     @Autowired
     private IUsuarioClienteRepository usuarioClienteRepo;
 
+    @Autowired
+    private IHistorialRepository historialRepo;
+
     @Override
     public Vehiculo crearVehiculo(VehiculoDTO datos) {
         UsuarioCliente cliente = usuarioClienteRepo.findById(datos.getUsuarioId())
@@ -31,6 +36,12 @@ public class VehiculoService implements IVehiculoService {
         vehiculo.setModelo(datos.getModelo());
         vehiculo.setPatente(datos.getPatente());
         vehiculo.setUsuarioCliente(cliente);
+
+        Historial historial = new Historial();
+        historial.setVehiculo(vehiculo);
+        historialRepo.save(historial);
+
+        vehiculo.setHistorial(historial);
 
         return vehiculoRepo.save(vehiculo);
     }

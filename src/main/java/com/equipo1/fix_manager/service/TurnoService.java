@@ -1,13 +1,13 @@
 package com.equipo1.fix_manager.service;
 
 
-import com.equipo1.fix_manager.dto.CrearTurnoDTO;
-import com.equipo1.fix_manager.dto.TurnoResponseDTO;
+import com.equipo1.fix_manager.dto.*;
 import com.equipo1.fix_manager.model.*;
 import com.equipo1.fix_manager.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +30,9 @@ public class TurnoService  implements ITurnoService{
     @Autowired
     private IUsuarioClienteRepository usuarioClienteRepo;
 
+    @Autowired
+    private ITurnoEstadoHistorialService turnoEstadoHistorialService;
+
 
 
     @Override
@@ -46,7 +49,7 @@ public class TurnoService  implements ITurnoService{
         turno.setFecha(datos.getFecha());
         turno.setHora(datos.getHora());
         turno.setDisponibilidad(DisponibilidadTurno.LIBRE);
-        turno.setEstado(null); // se puede setear como Estado.PENDIENTE si lo preferís
+        turno.setEstado(Estado.PENDIENTE);
         turno.setAgenda(taller.getAgenda());
 
         turnoRepo.save(turno);
@@ -91,7 +94,179 @@ public class TurnoService  implements ITurnoService{
         turno.setEstado(Estado.PENDIENTE);
 
         turnoRepo.save(turno);
+
+        turnoEstadoHistorialService.registrarCambioEstado(turno.getId(), Estado.PENDIENTE, "Turno reservado por cliente");
     }
+
+    @Override
+    public List<TurnoReservadoDTO> obtenerTurnosPorCliente(Long clienteId) {
+        UsuarioCliente cliente = usuarioClienteRepo.findById(clienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+
+        List<Turno> turnos = turnoRepo.findByCliente_Id(clienteId);
+
+        return turnos.stream()
+                .map(t -> new TurnoReservadoDTO(
+                        t.getId(),
+                        t.getFecha(),
+                        t.getHora(),
+                        t.getAgenda().getTaller().getDescripcion(),
+                        t.getEstado() != null ? t.getEstado().name() : "SIN_ESTADO",
+                        t.getVehiculo() != null ? t.getVehiculo().getPatente() : "NO_ASIGNADO"
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<TurnoReservadoDTO> obtenerTurnosPendientesDelTaller(Long tallerId) {
+        Taller taller = tallerRepo.findById(tallerId)
+                .orElseThrow(() -> new IllegalArgumentException("Taller no encontrado"));
+
+        Agenda agenda = taller.getAgenda();
+        if (agenda == null) {
+            throw new IllegalStateException("El taller no tiene una agenda asociada.");
+        }
+
+        List<Turno> turnos = turnoRepo
+                .findByAgenda_IdAndEstadoOrderByFechaAscHoraAsc(agenda.getId(), Estado.PENDIENTE);
+
+        return turnos.stream()
+                .map(t -> new TurnoReservadoDTO(
+                        t.getId(),
+                        t.getFecha(),
+                        t.getHora(),
+                        taller.getDescripcion(),
+                        t.getEstado().name(),
+                        t.getVehiculo() != null ? t.getVehiculo().getPatente() : "NO_ASIGNADO"
+                ))
+                .toList();
+    }
+
+    @Override
+    public void finalizarTurno(Long turnoId, FinalizarTurnoDTO datos) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new IllegalArgumentException("Turno no encontrado"));
+
+        if (turno.getEstado() != Estado.PENDIENTE) {
+            throw new IllegalStateException("Solo se pueden finalizar turnos en estado PENDIENTE.");
+        }
+
+        turno.setEstado(Estado.REALIZADO);
+        turno.setDescripcionTrabajo(datos.getDescripcionTrabajo());
+        turno.setImagenes(datos.getImagenes());
+
+        // 🔽 Nueva lógica para agregar el turno al historial del vehículo
+        Vehiculo vehiculo = turno.getVehiculo();
+        if (vehiculo != null) {
+            Historial historial = vehiculo.getHistorial();
+            if (historial == null) {
+                historial = new Historial();
+                historial.setVehiculo(vehiculo);
+                historial.setTurnos(new ArrayList<>());
+                vehiculo.setHistorial(historial); // establecer referencia bidireccional
+            }
+            historial.getTurnos().add(turno);
+            turno.setHistorial(historial);
+        }
+
+        turnoRepo.save(turno);
+    }
+
+
+    @Override
+    public List<HistorialTurnoDTO> obtenerHistorialPorVehiculo(Long vehiculoId) {
+        Vehiculo vehiculo = vehiculoRepo.findById(vehiculoId)
+                .orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado"));
+
+        List<Turno> turnos = turnoRepo.findByVehiculo_IdAndEstado(vehiculoId, Estado.REALIZADO);
+
+        return turnos.stream()
+                .map(t -> new HistorialTurnoDTO(
+                        t.getId(),
+                        t.getFecha(),
+                        t.getHora(),
+                        t.getAgenda().getTaller().getDescripcion(),
+                        t.getDescripcionTrabajo(),
+                        t.getImagenes()
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<TurnoDTO> obtenerTodosLosTurnosPorTaller(Long tallerId) {
+        List<Turno> turnos = turnoRepo.findByAgenda_Taller_IdOrderByFechaAscHoraAsc(tallerId);
+        return turnos.stream().map(TurnoDTO::new).toList();
+    }
+
+
+    @Override
+    public void calificarTurno(Long turnoId, CalificarTurnoDTO dto) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new IllegalArgumentException("Turno no encontrado"));
+
+        if (turno.getEstado() != Estado.REALIZADO) {
+            throw new IllegalStateException("Solo se pueden calificar turnos realizados.");
+        }
+
+        if (turno.getCalificacion() != null) {
+            throw new IllegalStateException("Este turno ya fue calificado.");
+        }
+
+        int calificacion = dto.getCalificacion();
+        if (calificacion < 1 || calificacion > 5) {
+            throw new IllegalArgumentException("La calificación debe estar entre 1 y 5.");
+        }
+
+        turno.setCalificacion(calificacion);
+        turnoRepo.save(turno);
+
+        Taller taller = turno.getAgenda().getTaller();
+        Long cantidad = taller.getCantidadCalificaciones() != null ? taller.getCantidadCalificaciones() : 0L;
+        Double promedio = taller.getPromedioCalificacion() != null ? taller.getPromedioCalificacion() : 0.0;
+
+        Double nuevaSuma = promedio * cantidad + calificacion;
+        Long nuevaCantidad = cantidad + 1;
+        Double nuevoPromedio = nuevaSuma / nuevaCantidad;
+
+        taller.setCantidadCalificaciones(nuevaCantidad);
+        taller.setPromedioCalificacion(nuevoPromedio);
+        tallerRepo.save(taller);
+    }
+
+
+    @Override
+    public void cancelarTurnoPorCliente(Long turnoId) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new IllegalArgumentException("Turno no encontrado"));
+
+        if (turno.getEstado() != Estado.PENDIENTE) {
+            throw new IllegalStateException("Solo se pueden cancelar turnos pendientes.");
+        }
+
+        turno.setEstado(Estado.CANCELADO);
+        turno.setDescripcionTrabajo("Cancelado por el cliente");
+        turnoRepo.save(turno);
+    }
+
+    @Override
+    public void cancelarTurnoPorTaller(Long turnoId) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new IllegalArgumentException("Turno no encontrado"));
+
+        if (turno.getEstado() != Estado.PENDIENTE) {
+            throw new IllegalStateException("Solo se pueden cancelar turnos pendientes.");
+        }
+
+        turno.setEstado(Estado.CANCELADO);
+        turno.setDescripcionTrabajo("Cancelado por el taller");
+        turnoRepo.save(turno);
+    }
+
+
+
+
+
+
 
 
 

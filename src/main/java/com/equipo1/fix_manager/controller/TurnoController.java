@@ -1,7 +1,6 @@
 package com.equipo1.fix_manager.controller;
 
-import com.equipo1.fix_manager.dto.CrearTurnoDTO;
-import com.equipo1.fix_manager.dto.TurnoResponseDTO;
+import com.equipo1.fix_manager.dto.*;
 import com.equipo1.fix_manager.service.ITurnoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,14 +18,14 @@ public class TurnoController {
     private ITurnoService turnoService;
 
 
-    @PostMapping("/taller/{id}/crear")
+    @PostMapping("/taller/{id}/crear") //Crea turno en un taller.
     public ResponseEntity<Void> crearTurno(@PathVariable Long id, @RequestBody CrearTurnoDTO datos) {
         turnoService.crearTurnoDesdeTaller(id, datos);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
-    @GetMapping("/disponibles")
+    @GetMapping("/disponibles")//Lista los turnos disponibles de un taller
     public ResponseEntity<?> listarDisponiblesPorTaller(@RequestParam Long tallerId) {
         List<TurnoResponseDTO> turnos = turnoService.listarTurnosDisponiblesPorTaller(tallerId);
 
@@ -37,7 +36,7 @@ public class TurnoController {
         return ResponseEntity.ok(turnos);
     }
 
-    @PutMapping("/{turnoId}/reservar")
+    @PutMapping("/{turnoId}/reservar") //Reservar turno taller
     public ResponseEntity<Void> reservarTurno(
             @PathVariable Long turnoId,
             @RequestParam Long clienteId,
@@ -46,6 +45,82 @@ public class TurnoController {
         turnoService.reservarTurno(turnoId, clienteId, vehiculoId);
         return ResponseEntity.ok().build(); // 200 OK
     }
+
+    @GetMapping("/cliente/{id}")//Ver turnos de  Reservados de un cliente
+    public ResponseEntity<?> obtenerTurnosDelCliente(@PathVariable Long id) {
+        List<TurnoReservadoDTO> turnos = turnoService.obtenerTurnosPorCliente(id);
+
+        if (turnos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(turnos);
+    }
+
+
+    @GetMapping("/taller/{id}/pendientes")//Lista turnos pendientes taller
+    public ResponseEntity<?> obtenerPendientesDelTaller(@PathVariable Long id) {
+        List<TurnoReservadoDTO> turnos = turnoService.obtenerTurnosPendientesDelTaller(id);
+
+        if (turnos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(turnos);
+    }
+
+
+    @PutMapping("/{id}/finalizar")//Finalizar turno taller
+    public ResponseEntity<Void> finalizarTurno(
+            @PathVariable Long id,
+            @RequestBody FinalizarTurnoDTO datos) {
+
+        turnoService.finalizarTurno(id, datos);
+        return ResponseEntity.ok().build(); // 200 OK
+    }
+
+
+    @GetMapping("/vehiculo/{id}/historial")//Historial Vehiculo
+    public ResponseEntity<?> obtenerHistorialPorVehiculo(@PathVariable Long id) {
+        List<HistorialTurnoDTO> historial = turnoService.obtenerHistorialPorVehiculo(id);
+
+        if (historial.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(historial);
+    }
+
+
+    @GetMapping("/taller/{tallerId}/todos")//Listar turno de un taller
+    public ResponseEntity<List<TurnoDTO>> obtenerTodosLosTurnosPorTaller(@PathVariable Long tallerId) {
+        List<TurnoDTO> turnos = turnoService.obtenerTodosLosTurnosPorTaller(tallerId);
+        return ResponseEntity.ok(turnos);
+    }
+
+    @PutMapping("/{turnoId}/calificar") // Calificar taller
+    public ResponseEntity<String> calificarTurno(@PathVariable Long turnoId,
+                                                 @RequestBody CalificarTurnoDTO dto) {
+        turnoService.calificarTurno(turnoId, dto);
+        return ResponseEntity.ok("Turno calificado correctamente.");
+    }
+
+
+    @PutMapping("/{turnoId}/cancelar-cliente")
+    public ResponseEntity<?> cancelarPorCliente(@PathVariable Long turnoId) {
+        turnoService.cancelarTurnoPorCliente(turnoId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{turnoId}/cancelar-taller")
+    public ResponseEntity<?> cancelarPorTaller(@PathVariable Long turnoId) {
+        turnoService.cancelarTurnoPorTaller(turnoId);
+        return ResponseEntity.ok().build();
+    }
+
+
+
+
 
 
 }

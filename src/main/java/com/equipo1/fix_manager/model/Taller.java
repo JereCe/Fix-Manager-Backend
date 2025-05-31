@@ -11,10 +11,17 @@ public class Taller {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    private String nombre;
 
     private String descripcion;
     private String ubicacion;
     private String imagenLogo;
+
+    @Column(name = "promedio_calificacion")
+    private Double promedioCalificacion;
+
+    @Column(name = "cantidad_calificaciones")
+    private Long cantidadCalificaciones;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "agenda_id")
@@ -24,8 +31,9 @@ public class Taller {
     public Taller() {
     }
 
-    public Taller(Long id, String descripcion, String ubicacion, String imagenLogo, Agenda agenda) {
+    public Taller(Long id, String nombre, String descripcion, String ubicacion, String imagenLogo, Agenda agenda) {
         this.id = id;
+        this.nombre = nombre;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
         this.imagenLogo = imagenLogo;

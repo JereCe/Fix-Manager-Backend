@@ -5,6 +5,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class CrearTallerDTO {
+    private String nombre;
     private String descripcion;
     private String ubicacion;
     private String imagenLogo;
