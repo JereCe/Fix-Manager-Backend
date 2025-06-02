@@ -18,20 +18,15 @@ public class UsuarioTallerController {
     private IUsuarioTallerService usuarioTallerService;
 
     @PostMapping("/registro")
-    public ResponseEntity<Void> registrar(@RequestBody RegistroUsuarioTallerDTO datos) {
-        if (usuarioTallerService.existePorEmail(datos.getEmail())) {
-            throw new IllegalStateException("El email ya está registrado.");
-        }
-
-        usuarioTallerService.registrar(datos);
+    public ResponseEntity<?> registrar(@RequestBody RegistroUsuarioTallerDTO datos) {
+        usuarioTallerService.registrarUsuario(datos);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO datos) {
-        LoginResponseDTO respuesta = usuarioTallerService.login(datos);
-        return ResponseEntity.ok(respuesta); // 200 OK
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO datos) {
+        AuthResponseDTO response = usuarioTallerService.login(datos);
+        return ResponseEntity.ok(response);
     }
     @PostMapping("/{id}/crear-taller")
     public ResponseEntity<Void> crearTaller(@PathVariable Long id, @RequestBody CrearTallerDTO datos) {

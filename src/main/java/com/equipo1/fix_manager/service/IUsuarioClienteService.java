@@ -1,16 +1,14 @@
 package com.equipo1.fix_manager.service;
 
-import com.equipo1.fix_manager.dto.EditarUsuarioDTO;
-import com.equipo1.fix_manager.dto.LoginDTO;
-import com.equipo1.fix_manager.dto.LoginResponseDTO;
-import com.equipo1.fix_manager.dto.RegistroUsuarioClienteDTO;
+import com.equipo1.fix_manager.dto.*;
 import com.equipo1.fix_manager.model.UsuarioCliente;
 
 public interface IUsuarioClienteService {
 
-    public UsuarioCliente registrarUsuario(RegistroUsuarioClienteDTO datos);
 
-    LoginResponseDTO login(LoginDTO datos);
+
+    AuthResponseDTO registrarUsuario(RegistroUsuarioClienteDTO datos);
+    AuthResponseDTO login(LoginDTO dto);
 
     boolean existePorEmail(String email);
 

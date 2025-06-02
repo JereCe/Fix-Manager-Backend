@@ -16,20 +16,17 @@ public class UsuarioClienteController {
     @Autowired
     private IUsuarioClienteService usuarioService;
 
+
     @PostMapping("/registro")
     public ResponseEntity<?> registrar(@RequestBody RegistroUsuarioClienteDTO datos) {
-        if (usuarioService.existePorEmail(datos.getEmail())) {
-            throw new IllegalStateException("El email ya está registrado.");
-        }
-
         usuarioService.registrarUsuario(datos);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO datos) {
-        LoginResponseDTO respuesta = usuarioService.login(datos);
-        return ResponseEntity.ok(respuesta); // 200 OK
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO datos) {
+        AuthResponseDTO response = usuarioService.login(datos);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/editar/{id}")

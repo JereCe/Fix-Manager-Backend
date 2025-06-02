@@ -7,7 +7,9 @@ import com.equipo1.fix_manager.model.Taller;
 import com.equipo1.fix_manager.model.UsuarioTaller;
 import com.equipo1.fix_manager.repository.ITallerRepository;
 import com.equipo1.fix_manager.repository.IUsuarioTallerRepository;
+import com.equipo1.fix_manager.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,27 +23,58 @@ public class UsuarioTallerService implements IUsuarioTallerService {
     @Autowired
     private ITallerRepository tallerRepository;
 
-    @Override
-    public UsuarioTaller registrar(RegistroUsuarioTallerDTO datos) {
-        UsuarioTaller nuevo = new UsuarioTaller();
-        nuevo.setEmail(datos.getEmail());
-        nuevo.setContrasenia(datos.getContrasenia());
-        nuevo.setNombre(datos.getNombre());
-        nuevo.setApellido(datos.getApellido());
-        return usuarioTallerRepository.save(nuevo);
-    }
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
-    public LoginResponseDTO login(LoginDTO datos) {
-        UsuarioTaller usuario = usuarioTallerRepository.findByEmail(datos.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
-
-        if (!usuario.getContrasenia().equals(datos.getContrasenia())) {
-            throw new UnauthorizedException("Contraseña incorrecta.");
+    public AuthResponseDTO registrarUsuario(RegistroUsuarioTallerDTO datos) {
+        if (usuarioTallerRepository.existsByEmail(datos.getEmail())) {
+            throw new RuntimeException("El email ya está registrado.");
         }
 
-        return new LoginResponseDTO(true, "Login exitoso.");
+        UsuarioTaller nuevo = new UsuarioTaller();
+        nuevo.setNombre(datos.getNombre());
+        nuevo.setApellido(datos.getApellido());
+        nuevo.setEmail(datos.getEmail());
+        nuevo.setContrasenia(passwordEncoder.encode(datos.getContrasenia()));
+
+        usuarioTallerRepository.save(nuevo);
+
+        String token = jwtService.generateToken(nuevo.getEmail());
+
+        return new AuthResponseDTO(
+                token,
+                "TALLER",
+                nuevo.getId(),
+                nuevo.getEmail(),
+                nuevo.getNombre()
+        );
     }
+
+
+    @Override
+    public AuthResponseDTO login(LoginDTO dto) {
+        UsuarioTaller cliente = usuarioTallerRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Email no encontrado"));
+
+        if (!passwordEncoder.matches(dto.getContrasenia(), cliente.getContrasenia())) {
+            throw new IllegalArgumentException("Contraseña incorrecta");
+        }
+
+        String token = jwtService.generateToken(cliente.getEmail());
+        return new AuthResponseDTO(
+                token,
+                "TALLER",
+                cliente.getId(),
+                cliente.getEmail(),
+                cliente.getNombre()
+        );
+    }
+
+
 
     @Override
     public Taller crearTallerParaUsuario(Long usuarioTallerId, CrearTallerDTO datos) {
