@@ -155,19 +155,7 @@ public class TurnoService  implements ITurnoService{
         turno.setDescripcionTrabajo(datos.getDescripcionTrabajo());
         turno.setImagenes(datos.getImagenes());
 
-        // 🔽 Nueva lógica para agregar el turno al historial del vehículo
-        Vehiculo vehiculo = turno.getVehiculo();
-        if (vehiculo != null) {
-            Historial historial = vehiculo.getHistorial();
-            if (historial == null) {
-                historial = new Historial();
-                historial.setVehiculo(vehiculo);
-                historial.setTurnos(new ArrayList<>());
-                vehiculo.setHistorial(historial); // establecer referencia bidireccional
-            }
-            historial.getTurnos().add(turno);
-            turno.setHistorial(historial);
-        }
+
 
         turnoRepo.save(turno);
     }

@@ -37,11 +37,7 @@ public class VehiculoService implements IVehiculoService {
         vehiculo.setPatente(datos.getPatente());
         vehiculo.setUsuarioCliente(cliente);
 
-        Historial historial = new Historial();
-        historial.setVehiculo(vehiculo);
-        historialRepo.save(historial);
 
-        vehiculo.setHistorial(historial);
 
         return vehiculoRepo.save(vehiculo);
     }
