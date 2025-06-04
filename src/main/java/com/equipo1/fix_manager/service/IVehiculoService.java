@@ -15,4 +15,6 @@ public interface IVehiculoService {
     void actualizarVehiculo(Long id, VehiculoDTO datos);
 
     void eliminarVehiculo(Long id);
+
+    VehiculoResponseDTO obtenerVehiculoPorId(Long id);
 }

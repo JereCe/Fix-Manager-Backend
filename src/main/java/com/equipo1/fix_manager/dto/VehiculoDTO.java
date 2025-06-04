@@ -9,5 +9,6 @@ public class VehiculoDTO {
     private String modelo;
     private String patente;
     private Long usuarioId;
+    private Integer anio;
 
 }

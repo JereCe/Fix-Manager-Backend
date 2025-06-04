@@ -35,6 +35,7 @@ public class VehiculoService implements IVehiculoService {
         vehiculo.setMarca(datos.getMarca());
         vehiculo.setModelo(datos.getModelo());
         vehiculo.setPatente(datos.getPatente());
+        vehiculo.setAnio(datos.getAnio());
         vehiculo.setUsuarioCliente(cliente);
 
 
@@ -47,7 +48,13 @@ public class VehiculoService implements IVehiculoService {
         List<Vehiculo> lista = vehiculoRepo.findByUsuarioCliente_Id(usuarioId);
 
         return lista.stream()
-                .map(v -> new VehiculoResponseDTO(v.getId(), v.getMarca(), v.getModelo(), v.getPatente()))
+                .map(v -> new VehiculoResponseDTO(
+                        v.getId(),
+                        v.getMarca(),
+                        v.getModelo(),
+                        v.getPatente(),
+                        v.getAnio()  // 👈 asegurate de que `Vehiculo` tenga este campo
+                ))
                 .toList();
     }
 
@@ -59,6 +66,7 @@ public class VehiculoService implements IVehiculoService {
         vehiculo.setMarca(datos.getMarca());
         vehiculo.setModelo(datos.getModelo());
         vehiculo.setPatente(datos.getPatente());
+        vehiculo.setAnio(datos.getAnio());
 
         vehiculoRepo.save(vehiculo);
     }
@@ -69,6 +77,14 @@ public class VehiculoService implements IVehiculoService {
                 .orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado."));
 
         vehiculoRepo.delete(vehiculo);
+    }
+
+    @Override
+    public VehiculoResponseDTO obtenerVehiculoPorId(Long id) {
+        Vehiculo v = vehiculoRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado"));
+
+        return new VehiculoResponseDTO(v.getId(), v.getMarca(), v.getModelo(), v.getPatente(), v.getAnio());
     }
 
 

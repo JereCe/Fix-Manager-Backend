@@ -49,4 +49,10 @@ public class VehiculoController {
         vehiculoService.eliminarVehiculo(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<VehiculoResponseDTO> obtenerVehiculoPorId(@PathVariable Long id) {
+        VehiculoResponseDTO vehiculo = vehiculoService.obtenerVehiculoPorId(id);
+        return ResponseEntity.ok(vehiculo);
+    }
 }

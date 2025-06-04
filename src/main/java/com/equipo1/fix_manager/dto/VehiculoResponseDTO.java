@@ -9,13 +9,13 @@ public class VehiculoResponseDTO {
     private String marca;
     private String modelo;
     private String patente;
+    private Integer anio;
 
-    public VehiculoResponseDTO(Long id, String marca, String modelo, String patente) {
+    public VehiculoResponseDTO(Long id, String marca, String modelo, String patente, Integer anio) {
         this.id = id;
         this.marca = marca;
         this.modelo = modelo;
         this.patente = patente;
+        this.anio = anio;
     }
-
-
 }
