@@ -6,8 +6,10 @@ import com.equipo1.fix_manager.service.IUsuarioTallerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/talleres")
@@ -16,6 +18,9 @@ public class UsuarioTallerController {
 
     @Autowired
     private IUsuarioTallerService usuarioTallerService;
+
+    @Autowired
+    private IUsuarioTallerService tallerService;
 
     @PostMapping("/registro")
     public ResponseEntity<?> registrar(@RequestBody RegistroUsuarioTallerDTO datos) {
@@ -28,9 +33,20 @@ public class UsuarioTallerController {
         AuthResponseDTO response = usuarioTallerService.login(datos);
         return ResponseEntity.ok(response);
     }
-    @PostMapping("/{id}/crear-taller")
-    public ResponseEntity<Void> crearTaller(@PathVariable Long id, @RequestBody CrearTallerDTO datos) {
-        usuarioTallerService.crearTallerParaUsuario(id, datos);
+    @PostMapping(path = "/{id}/crear-taller", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> crearTaller(
+            @PathVariable Long id,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("ubicacion") String ubicacion,
+            @RequestPart("imagen") MultipartFile imagenLogo) {
+
+        CrearTallerDTO datos = new CrearTallerDTO();
+        datos.setNombre(nombre);
+        datos.setDescripcion(descripcion);
+        datos.setUbicacion(ubicacion);
+
+        usuarioTallerService.crearTallerParaUsuario(id, datos, imagenLogo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

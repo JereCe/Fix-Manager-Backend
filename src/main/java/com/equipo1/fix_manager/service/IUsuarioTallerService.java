@@ -3,6 +3,7 @@ package com.equipo1.fix_manager.service;
 import com.equipo1.fix_manager.dto.*;
 import com.equipo1.fix_manager.model.Taller;
 import com.equipo1.fix_manager.model.UsuarioTaller;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IUsuarioTallerService {
 
@@ -10,7 +11,8 @@ public interface IUsuarioTallerService {
 
 
 
-    Taller crearTallerParaUsuario(Long usuarioTallerId, CrearTallerDTO datos);
+    void crearTallerParaUsuario(Long usuarioId, CrearTallerDTO datos, MultipartFile imagenLogo);
+
 
 
 

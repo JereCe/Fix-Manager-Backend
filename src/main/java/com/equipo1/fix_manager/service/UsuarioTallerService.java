@@ -11,7 +11,9 @@ import com.equipo1.fix_manager.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -28,6 +30,10 @@ public class UsuarioTallerService implements IUsuarioTallerService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ITallerService tallerService;
+
 
     @Override
     public AuthResponseDTO registrarUsuario(RegistroUsuarioTallerDTO datos) {
@@ -75,32 +81,17 @@ public class UsuarioTallerService implements IUsuarioTallerService {
     }
 
 
-
     @Override
-    public Taller crearTallerParaUsuario(Long usuarioTallerId, CrearTallerDTO datos) {
-        UsuarioTaller usuario = usuarioTallerRepository.findById(usuarioTallerId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
-
-        if (usuario.getTaller() != null) {
-            throw new IllegalStateException("El usuario ya tiene un taller registrado.");
+    public void crearTallerParaUsuario(Long usuarioId, CrearTallerDTO datos, MultipartFile imagenLogo) {
+        try {
+            tallerService.crearTallerConImagen(usuarioId, datos, imagenLogo);
+        } catch (IOException e) {
+            throw new RuntimeException("Error al guardar la imagen", e);
         }
-
-        Taller taller = new Taller();
-        taller.setNombre(datos.getNombre());
-        taller.setDescripcion(datos.getDescripcion());
-        taller.setUbicacion(datos.getUbicacion());
-        taller.setImagenLogo(datos.getImagenLogo());
-
-        Agenda agenda = new Agenda();
-        agenda.setTaller(taller);
-        taller.setAgenda(agenda);
-
-        Taller guardado = tallerRepository.save(taller);
-        usuario.setTaller(guardado);
-        usuarioTallerRepository.save(usuario);
-
-        return guardado;
     }
+
+
+
 
     @Override
     public TallerResponseDTO obtenerOTallerDeUsuario(Long usuarioId) {
