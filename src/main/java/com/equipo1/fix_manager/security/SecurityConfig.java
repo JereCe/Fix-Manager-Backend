@@ -30,7 +30,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/clientes/login", "/api/clientes/registro",
                                 "/api/talleres/login", "/api/talleres/registro",
-                                "/api/auth/check-status"
+                                "/api/auth/check-status",
+                                "/uploads/**"  // ✅ acceso libre a imágenes
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -38,6 +39,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)

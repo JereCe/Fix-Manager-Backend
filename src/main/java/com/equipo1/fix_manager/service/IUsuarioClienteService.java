@@ -14,4 +14,6 @@ public interface IUsuarioClienteService {
 
     void actualizarUsuario(Long id, EditarUsuarioDTO datos);
 
+    UsuarioClienteResponseDTO obtenerPorId(Long id);
+
 }

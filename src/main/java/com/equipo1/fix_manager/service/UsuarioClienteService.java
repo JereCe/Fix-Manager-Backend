@@ -54,6 +54,7 @@ public class UsuarioClienteService implements IUsuarioClienteService {
 
 
 
+
     @Override
     public AuthResponseDTO login(LoginDTO dto) {
         UsuarioCliente cliente = usuarioClienteRepo.findByEmail(dto.getEmail())
@@ -89,6 +90,14 @@ public class UsuarioClienteService implements IUsuarioClienteService {
 
         usuarioClienteRepo.save(usuario);
     }
+
+    @Override
+    public UsuarioClienteResponseDTO obtenerPorId(Long id) {
+        UsuarioCliente user = usuarioClienteRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario cliente no encontrado"));
+        return new UsuarioClienteResponseDTO(user.getId(), user.getNombre(), user.getApellido(), user.getEmail(), user.getDocumento());
+    }
+
 
 
 

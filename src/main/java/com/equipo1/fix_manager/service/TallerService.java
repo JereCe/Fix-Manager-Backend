@@ -35,6 +35,7 @@ public class TallerService implements ITallerService {
 
         return new TallerResponseDTO(
                 taller.getId(),
+                taller.getNombre(),
                 taller.getDescripcion(),
                 taller.getUbicacion(),
                 taller.getImagenLogo(),

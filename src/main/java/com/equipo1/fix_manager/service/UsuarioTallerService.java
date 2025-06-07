@@ -104,12 +104,21 @@ public class UsuarioTallerService implements IUsuarioTallerService {
 
         return new TallerResponseDTO(
                 taller.getId(),
+                taller.getNombre(),
                 taller.getDescripcion(),
                 taller.getUbicacion(),
                 taller.getImagenLogo(),
                 taller.getPromedioCalificacion(),
                 taller.getCantidadCalificaciones()
         );
+    }
+
+    @Override
+    public UsuarioTallerResponseDTO obtenerPorId(Long id) {
+        UsuarioTaller user = usuarioTallerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario taller no encontrado"));
+        return new UsuarioTallerResponseDTO(user.getId(), user.getNombre(), user.getApellido(), user.getEmail());
+
     }
 
 
@@ -147,6 +156,8 @@ public class UsuarioTallerService implements IUsuarioTallerService {
 
         tallerRepository.save(taller);
     }
+
+
 
 
 }

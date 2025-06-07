@@ -2,6 +2,7 @@ package com.equipo1.fix_manager.controller;
 
 import com.equipo1.fix_manager.dto.*;
 
+import com.equipo1.fix_manager.model.UsuarioTaller;
 import com.equipo1.fix_manager.service.IUsuarioTallerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,12 @@ public class UsuarioTallerController {
     public ResponseEntity<Void> actualizarTaller(@PathVariable Long id, @RequestBody CrearTallerDTO datos) {
         usuarioTallerService.actualizarTaller(id, datos);
         return ResponseEntity.ok().build(); // 200 OK
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioTallerResponseDTO> obtenerUsuTaller(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioTallerService.obtenerPorId(id));
     }
 
 }

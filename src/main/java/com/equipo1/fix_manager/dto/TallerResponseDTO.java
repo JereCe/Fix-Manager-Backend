@@ -7,6 +7,7 @@ import lombok.Setter;
 public class TallerResponseDTO {
 
     private Long id;
+    private String nombre;
     private String descripcion;
     private String ubicacion;
     private String imagenLogo;
@@ -14,8 +15,9 @@ public class TallerResponseDTO {
     private Long cantidadCalificaciones;
 
 
-    public TallerResponseDTO(Long id, String descripcion, String ubicacion, String imagenLogo, Double promedioCalificacion, Long cantidadCalificaciones) {
+    public TallerResponseDTO(Long id, String nombre, String descripcion, String ubicacion, String imagenLogo, Double promedioCalificacion, Long cantidadCalificaciones) {
         this.id = id;
+        this.nombre = nombre;
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
         this.imagenLogo = imagenLogo;

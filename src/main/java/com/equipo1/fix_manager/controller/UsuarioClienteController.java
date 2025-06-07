@@ -34,4 +34,10 @@ public class UsuarioClienteController {
         usuarioService.actualizarUsuario(id, datos);
         return ResponseEntity.ok().build(); // 200 OK
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioClienteResponseDTO> obtenerCliente(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.obtenerPorId(id));
+    }
+
 }

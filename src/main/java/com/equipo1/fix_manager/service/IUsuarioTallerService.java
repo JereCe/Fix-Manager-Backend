@@ -25,4 +25,9 @@ public interface IUsuarioTallerService {
     AuthResponseDTO registrarUsuario(RegistroUsuarioTallerDTO datos);
     AuthResponseDTO login(LoginDTO dto);
     TallerResponseDTO obtenerOTallerDeUsuario(Long usuarioId);
+
+    UsuarioTallerResponseDTO obtenerPorId(Long id);
+
+
+
 }
