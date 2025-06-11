@@ -16,7 +16,7 @@ public interface ITurnoService {
     List<TurnoReservadoDetalleDTO> obtenerTurnosPorCliente(Long clienteId);
 
 
-    List<TurnoReservadoDTO> obtenerTurnosPendientesDelTaller(Long tallerId);
+    List<TurnoPendienteTallerDTO> obtenerTurnosPendientesDelTaller(Long tallerId);
 
     void finalizarTurno(Long turnoId, FinalizarTurnoDTO datos);
 

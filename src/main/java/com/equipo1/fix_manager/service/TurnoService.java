@@ -124,29 +124,23 @@ public class TurnoService  implements ITurnoService{
                 .toList();
     }
     @Override
-    public List<TurnoReservadoDTO> obtenerTurnosPendientesDelTaller(Long tallerId) {
-        Taller taller = tallerRepo.findById(tallerId)
-                .orElseThrow(() -> new IllegalArgumentException("Taller no encontrado"));
+    public List<TurnoPendienteTallerDTO> obtenerTurnosPendientesDelTaller(Long tallerId) {
+        List<Turno> turnos = turnoRepo.findByAgenda_Taller_IdAndEstadoOrderByFechaAscHoraAsc(tallerId, Estado.PENDIENTE);
 
-        Agenda agenda = taller.getAgenda();
-        if (agenda == null) {
-            throw new IllegalStateException("El taller no tiene una agenda asociada.");
-        }
-
-        List<Turno> turnos = turnoRepo
-                .findByAgenda_IdAndEstadoOrderByFechaAscHoraAsc(agenda.getId(), Estado.PENDIENTE);
-
-        return turnos.stream()
-                .map(t -> new TurnoReservadoDTO(
-                        t.getId(),
-                        t.getFecha(),
-                        t.getHora(),
-                        taller.getDescripcion(),
-                        t.getEstado().name(),
-                        t.getVehiculo() != null ? t.getVehiculo().getPatente() : "NO_ASIGNADO"
-                ))
-                .toList();
+        return turnos.stream().map(t -> new TurnoPendienteTallerDTO(
+                t.getId(),
+                t.getFecha().toString(),
+                t.getHora().toString(),
+                t.getEstado() != null ? t.getEstado().name() : "SIN ESTADO",
+                t.getDisponibilidad() != null ? t.getDisponibilidad().name() : "SIN DISPONIBILIDAD",
+                t.getVehiculo() != null ? t.getVehiculo().getMarca() : "SIN DATOS",
+                t.getVehiculo() != null ? t.getVehiculo().getModelo() : "SIN DATOS",
+                t.getVehiculo() != null ? t.getVehiculo().getPatente() : "SIN DATOS",
+                t.getAgenda().getTaller().getNombre(),
+                t.getAgenda().getTaller().getUbicacion()
+        )).toList();
     }
+
 
     @Override
     public void finalizarTurno(Long turnoId, FinalizarTurnoDTO datos) {

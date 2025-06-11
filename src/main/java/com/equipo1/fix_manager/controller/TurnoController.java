@@ -58,9 +58,9 @@ public class TurnoController {
     }
 
 
-    @GetMapping("/taller/{id}/pendientes")//Lista turnos pendientes taller
+    @GetMapping("/taller/{id}/pendientes")
     public ResponseEntity<?> obtenerPendientesDelTaller(@PathVariable Long id) {
-        List<TurnoReservadoDTO> turnos = turnoService.obtenerTurnosPendientesDelTaller(id);
+        List<TurnoPendienteTallerDTO> turnos = turnoService.obtenerTurnosPendientesDelTaller(id);
 
         if (turnos.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -68,6 +68,7 @@ public class TurnoController {
 
         return ResponseEntity.ok(turnos);
     }
+
 
 
     @PutMapping("/{id}/finalizar")//Finalizar turno taller

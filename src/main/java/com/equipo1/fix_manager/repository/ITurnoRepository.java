@@ -24,6 +24,8 @@ public interface ITurnoRepository extends JpaRepository<Turno,Long> {
 
     List<Turno> findByAgenda_Taller_IdOrderByFechaAscHoraAsc(Long tallerId);
 
+    List<Turno> findByAgenda_Taller_IdAndEstadoOrderByFechaAscHoraAsc(Long tallerId, Estado estado);
+
 
     List<Turno> findByClienteId(Long clienteId);
 
