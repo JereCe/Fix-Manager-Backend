@@ -99,24 +99,30 @@ public class TurnoService  implements ITurnoService{
     }
 
     @Override
-    public List<TurnoReservadoDTO> obtenerTurnosPorCliente(Long clienteId) {
+    public List<TurnoReservadoDetalleDTO> obtenerTurnosPorCliente(Long clienteId) {
         UsuarioCliente cliente = usuarioClienteRepo.findById(clienteId)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
         List<Turno> turnos = turnoRepo.findByCliente_Id(clienteId);
 
         return turnos.stream()
-                .map(t -> new TurnoReservadoDTO(
-                        t.getId(),
-                        t.getFecha(),
-                        t.getHora(),
-                        t.getAgenda().getTaller().getDescripcion(),
-                        t.getEstado() != null ? t.getEstado().name() : "SIN_ESTADO",
-                        t.getVehiculo() != null ? t.getVehiculo().getPatente() : "NO_ASIGNADO"
-                ))
+                .map(t -> {
+                    Taller taller = t.getAgenda().getTaller();
+                    Vehiculo vehiculo = t.getVehiculo();
+                    return new TurnoReservadoDetalleDTO(
+                            t.getId(),
+                            t.getFecha().toString(),
+                            t.getHora().toString(),
+                            t.getEstado() != null ? t.getEstado().name() : "SIN_ESTADO",
+                            taller != null ? taller.getNombre() : "TALLER DESCONOCIDO",
+                            taller != null ? taller.getUbicacion() : "SIN UBICACIÓN",
+                            vehiculo != null ? vehiculo.getMarca() : "SIN MARCA",
+                            vehiculo != null ? vehiculo.getModelo() : "SIN MODELO",
+                            vehiculo != null ? vehiculo.getPatente() : "SIN PATENTE"
+                    );
+                })
                 .toList();
     }
-
     @Override
     public List<TurnoReservadoDTO> obtenerTurnosPendientesDelTaller(Long tallerId) {
         Taller taller = tallerRepo.findById(tallerId)

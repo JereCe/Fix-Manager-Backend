@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -79,5 +80,21 @@ public class TallerService implements ITallerService {
         usuarioTallerRepository.save(usuario);
 
         return guardado;
+    }
+
+    @Override
+    public List<TallerResponseDTO> obtenerTodos() {
+        return tallerRepository.findAll()
+                .stream()
+                .map(t -> new TallerResponseDTO(
+                        t.getId(),
+                        t.getNombre(),
+                        t.getDescripcion(),
+                        t.getUbicacion(),
+                        t.getImagenLogo(),
+                        t.getPromedioCalificacion(),
+                        t.getCantidadCalificaciones()
+                ))
+                .toList();
     }
 }

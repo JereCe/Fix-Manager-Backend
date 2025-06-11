@@ -33,10 +33,18 @@ public class UsuarioCliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<Turno> turnos;
 
+    @ManyToMany
+    @JoinTable(
+            name = "favoritos_clientes_talleres",
+            joinColumns = @JoinColumn(name = "cliente_id"),
+            inverseJoinColumns = @JoinColumn(name = "taller_id")
+    )
+    private List<Taller> talleresFavoritos;
+
     public UsuarioCliente() {
     }
 
-    public UsuarioCliente(Long id, String email, String contrasenia, String nombre, String apellido, String documento, List<Vehiculo> vehiculos, List<Turno> turnos) {
+    public UsuarioCliente(Long id, String email, String contrasenia, String nombre, String apellido, String documento, List<Vehiculo> vehiculos, List<Turno> turnos, List<Taller> talleresFavoritos) {
         this.id = id;
         this.email = email;
         this.contrasenia = contrasenia;
@@ -45,5 +53,6 @@ public class UsuarioCliente {
         this.documento = documento;
         this.vehiculos = vehiculos;
         this.turnos = turnos;
+        this.talleresFavoritos = talleresFavoritos;
     }
 }

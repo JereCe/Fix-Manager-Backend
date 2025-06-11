@@ -13,7 +13,7 @@ public interface ITurnoService {
 
     void reservarTurno(Long turnoId, Long clienteId, Long vehiculoId);
 
-    List<TurnoReservadoDTO> obtenerTurnosPorCliente(Long clienteId);
+    List<TurnoReservadoDetalleDTO> obtenerTurnosPorCliente(Long clienteId);
 
 
     List<TurnoReservadoDTO> obtenerTurnosPendientesDelTaller(Long tallerId);

@@ -3,13 +3,16 @@ package com.equipo1.fix_manager.service;
 
 import com.equipo1.fix_manager.dto.*;
 import com.equipo1.fix_manager.exception.UnauthorizedException;
+import com.equipo1.fix_manager.model.Taller;
 import com.equipo1.fix_manager.model.UsuarioCliente;
+import com.equipo1.fix_manager.repository.ITallerRepository;
 import com.equipo1.fix_manager.repository.IUsuarioClienteRepository;
 import com.equipo1.fix_manager.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,6 +20,10 @@ public class UsuarioClienteService implements IUsuarioClienteService {
 
     @Autowired
     private IUsuarioClienteRepository usuarioClienteRepo;
+
+
+    @Autowired
+    private ITallerRepository tallerRepo;
 
     @Autowired
     private JwtService jwtService;
@@ -97,6 +104,51 @@ public class UsuarioClienteService implements IUsuarioClienteService {
                 .orElseThrow(() -> new IllegalArgumentException("Usuario cliente no encontrado"));
         return new UsuarioClienteResponseDTO(user.getId(), user.getNombre(), user.getApellido(), user.getEmail(), user.getDocumento());
     }
+    @Override
+    public void agregarTallerFavorito(Long clienteId, Long tallerId) {
+        UsuarioCliente cliente = usuarioClienteRepo.findById(clienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+
+        Taller taller = tallerRepo.findById(tallerId)
+                .orElseThrow(() -> new IllegalArgumentException("Taller no encontrado"));
+
+        if (!cliente.getTalleresFavoritos().contains(taller)) {
+            cliente.getTalleresFavoritos().add(taller);
+            usuarioClienteRepo.save(cliente);
+        }
+    }
+
+    @Override
+    public void removerTallerFavorito(Long clienteId, Long tallerId) {
+        UsuarioCliente cliente = usuarioClienteRepo.findById(clienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+
+        Taller taller = tallerRepo.findById(tallerId)
+                .orElseThrow(() -> new IllegalArgumentException("Taller no encontrado"));
+
+        cliente.getTalleresFavoritos().remove(taller);
+        usuarioClienteRepo.save(cliente);
+    }
+
+    @Override
+    public List<TallerDTO> obtenerTalleresFavoritos(Long clienteId) {
+        UsuarioCliente cliente = usuarioClienteRepo.findById(clienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
+
+        return cliente.getTalleresFavoritos().stream()
+                .map(t -> new TallerDTO(
+                        t.getId(),
+                        t.getNombre(),
+                        t.getDescripcion(),
+                        t.getUbicacion(),
+                        t.getImagenLogo(),
+                        t.getPromedioCalificacion()
+                ))
+                .toList();
+    }
+
+
+
 
 
 

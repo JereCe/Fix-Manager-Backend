@@ -11,6 +11,8 @@ public class UsuarioClienteResponseDTO {
     private String email;
     private String documento;
 
+
+
     public UsuarioClienteResponseDTO(Long id, String nombre, String apellido, String email, String documento) {
         this.id = id;
         this.nombre = nombre;

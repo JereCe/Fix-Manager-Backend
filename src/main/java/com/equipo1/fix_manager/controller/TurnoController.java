@@ -48,7 +48,7 @@ public class TurnoController {
 
     @GetMapping("/cliente/{id}")//Ver turnos de  Reservados de un cliente
     public ResponseEntity<?> obtenerTurnosDelCliente(@PathVariable Long id) {
-        List<TurnoReservadoDTO> turnos = turnoService.obtenerTurnosPorCliente(id);
+        List<TurnoReservadoDetalleDTO> turnos = turnoService.obtenerTurnosPorCliente(id);
 
         if (turnos.isEmpty()) {
             return ResponseEntity.noContent().build();
