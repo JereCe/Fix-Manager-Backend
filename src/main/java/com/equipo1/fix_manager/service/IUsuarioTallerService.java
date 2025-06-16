@@ -20,7 +20,7 @@ public interface IUsuarioTallerService {
 
     boolean existePorEmail(String email);
 
-    void actualizarTaller(Long usuarioId, CrearTallerDTO datos);
+    void actualizarTaller(Long id, CrearTallerDTO datos, MultipartFile imagenLogo);
 
     AuthResponseDTO registrarUsuario(RegistroUsuarioTallerDTO datos);
     AuthResponseDTO login(LoginDTO dto);

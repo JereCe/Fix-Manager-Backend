@@ -155,28 +155,26 @@ public class TurnoService  implements ITurnoService{
         turno.setDescripcionTrabajo(datos.getDescripcionTrabajo());
         turno.setImagenes(datos.getImagenes());
 
-
-
         turnoRepo.save(turno);
     }
 
 
     @Override
     public List<HistorialTurnoDTO> obtenerHistorialPorVehiculo(Long vehiculoId) {
-        Vehiculo vehiculo = vehiculoRepo.findById(vehiculoId)
-                .orElseThrow(() -> new IllegalArgumentException("Vehículo no encontrado"));
-
         List<Turno> turnos = turnoRepo.findByVehiculo_IdAndEstado(vehiculoId, Estado.REALIZADO);
 
         return turnos.stream()
-                .map(t -> new HistorialTurnoDTO(
-                        t.getId(),
-                        t.getFecha(),
-                        t.getHora(),
-                        t.getAgenda().getTaller().getDescripcion(),
-                        t.getDescripcionTrabajo(),
-                        t.getImagenes()
-                ))
+                .map(t -> {
+                    Taller taller = t.getAgenda().getTaller();
+                    return new HistorialTurnoDTO(
+                            t.getId(),
+                            t.getFecha().toString(),
+                            t.getHora().toString(),
+                            taller != null ? taller.getNombre() : "TALLER DESCONOCIDO",
+                            taller != null ? taller.getUbicacion() : "SIN UBICACIÓN",
+                            t.getDescripcionTrabajo() != null ? t.getDescripcionTrabajo() : "Sin descripción"
+                    );
+                })
                 .toList();
     }
 
@@ -200,7 +198,7 @@ public class TurnoService  implements ITurnoService{
             throw new IllegalStateException("Este turno ya fue calificado.");
         }
 
-        int calificacion = dto.getCalificacion();
+        int calificacion = dto.getPuntuacion();
         if (calificacion < 1 || calificacion > 5) {
             throw new IllegalArgumentException("La calificación debe estar entre 1 y 5.");
         }
@@ -250,6 +248,44 @@ public class TurnoService  implements ITurnoService{
         turnoRepo.save(turno);
     }
 
+
+    @Override
+    public TurnoDetalleDTO obtenerDetalleTurno(Long turnoId) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new IllegalArgumentException("Turno no encontrado"));
+
+        if (turno.getEstado() != Estado.REALIZADO) {
+            throw new IllegalStateException("El turno no está finalizado");
+        }
+
+        Taller taller = turno.getAgenda().getTaller();
+        Vehiculo vehiculo = turno.getVehiculo();
+
+        return new TurnoDetalleDTO(
+                turno.getId(),
+                turno.getFecha().toString(),
+                turno.getHora().toString(),
+                taller != null ? taller.getNombre() : "TALLER SIN NOMBRE",
+                turno.getDescripcionTrabajo(),
+                turno.getImagenes() != null ? turno.getImagenes() : List.of(),
+                vehiculo != null ? vehiculo.getMarca() : "SIN MARCA",
+                vehiculo != null ? vehiculo.getModelo() : "SIN MODELO",
+                vehiculo != null ? vehiculo.getPatente() : "SIN PATENTE"
+        );
+    }
+
+
+    @Override
+    public CalificacionDTO obtenerCalificacionDeTurno(Long turnoId) {
+        Turno turno = turnoRepo.findById(turnoId)
+                .orElseThrow(() -> new IllegalArgumentException("Turno no encontrado"));
+
+        if (turno.getCalificacion() == null) {
+            return new CalificacionDTO(false, 0);
+        }
+
+        return new CalificacionDTO(true, turno.getCalificacion());
+    }
 
 
 

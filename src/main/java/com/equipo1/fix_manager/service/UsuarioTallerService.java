@@ -14,7 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UsuarioTallerService implements IUsuarioTallerService {
@@ -140,19 +145,35 @@ public class UsuarioTallerService implements IUsuarioTallerService {
     }
 
     @Override
-    public void actualizarTaller(Long usuarioId, CrearTallerDTO datos) {
-        UsuarioTaller usuario = usuarioTallerRepository.findById(usuarioId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    public void actualizarTaller(Long usuarioId, CrearTallerDTO datos, MultipartFile imagenLogo) {
+        Optional<UsuarioTaller> optionalUsuarioTaller = usuarioTallerRepository.findById(usuarioId);
 
-        Taller taller = usuario.getTaller();
-
-        if (taller == null) {
-            throw new IllegalStateException("El usuario aún no tiene un taller registrado.");
+        if (optionalUsuarioTaller.isEmpty()) {
+            throw new RuntimeException("Usuario taller no encontrado");
         }
 
+        UsuarioTaller usuarioTaller = optionalUsuarioTaller.get();
+        Taller taller = usuarioTaller.getTaller();
+
+        if (taller == null) {
+            throw new RuntimeException("El usuario no tiene un taller asignado");
+        }
+
+        taller.setNombre(datos.getNombre());
         taller.setDescripcion(datos.getDescripcion());
         taller.setUbicacion(datos.getUbicacion());
-        taller.setImagenLogo(datos.getImagenLogo());
+
+        if (imagenLogo != null && !imagenLogo.isEmpty()) {
+            try {
+                String nombreArchivo = UUID.randomUUID().toString() + "_" + imagenLogo.getOriginalFilename();
+                Path rutaDestino = Paths.get("uploads").resolve(nombreArchivo);
+                Files.copy(imagenLogo.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+
+                taller.setImagenLogo("/uploads/" + nombreArchivo);
+            } catch (IOException e) {
+                throw new RuntimeException("Error al guardar la imagen del taller", e);
+            }
+        }
 
         tallerRepository.save(taller);
     }

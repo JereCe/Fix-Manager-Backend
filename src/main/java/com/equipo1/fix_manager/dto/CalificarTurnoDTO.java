@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter@Setter
 public class CalificarTurnoDTO {
-    private Integer calificacion;
+    private Integer puntuacion;
 
 }

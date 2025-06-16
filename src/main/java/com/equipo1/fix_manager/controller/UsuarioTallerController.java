@@ -69,10 +69,21 @@ public class UsuarioTallerController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/modificar")
-    public ResponseEntity<Void> actualizarTaller(@PathVariable Long id, @RequestBody CrearTallerDTO datos) {
-        usuarioTallerService.actualizarTaller(id, datos);
-        return ResponseEntity.ok().build(); // 200 OK
+    @PutMapping(path = "/{id}/modificar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> actualizarTallerConImagen(
+            @PathVariable Long id,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("ubicacion") String ubicacion,
+            @RequestPart(name = "imagen", required = false) MultipartFile imagenLogo) {
+
+        CrearTallerDTO datos = new CrearTallerDTO();
+        datos.setNombre(nombre);
+        datos.setDescripcion(descripcion);
+        datos.setUbicacion(ubicacion);
+
+        usuarioTallerService.actualizarTaller(id, datos, imagenLogo);
+        return ResponseEntity.ok().build();
     }
 
 

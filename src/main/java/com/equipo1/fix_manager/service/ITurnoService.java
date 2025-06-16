@@ -31,5 +31,10 @@ public interface ITurnoService {
     void cancelarTurnoPorTaller(Long turnoId);
 
 
+    TurnoDetalleDTO obtenerDetalleTurno(Long id);
+
+
+    CalificacionDTO obtenerCalificacionDeTurno(Long turnoId);
+
 
 }

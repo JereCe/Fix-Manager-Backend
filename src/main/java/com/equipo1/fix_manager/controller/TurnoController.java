@@ -4,10 +4,19 @@ import com.equipo1.fix_manager.dto.*;
 import com.equipo1.fix_manager.service.ITurnoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/turnos")
@@ -71,13 +80,31 @@ public class TurnoController {
 
 
 
-    @PutMapping("/{id}/finalizar")//Finalizar turno taller
+    @PutMapping(path = "/{id}/finalizar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> finalizarTurno(
             @PathVariable Long id,
-            @RequestBody FinalizarTurnoDTO datos) {
+            @RequestPart("descripcionTrabajo") String descripcionTrabajo,
+            @RequestPart("imagenes") List<MultipartFile> imagenes) {
+
+        FinalizarTurnoDTO datos = new FinalizarTurnoDTO();
+        datos.setDescripcionTrabajo(descripcionTrabajo);
+        datos.setImagenes(imagenes.stream()
+                .map(this::guardarImagenYObtenerURL)
+                .collect(Collectors.toList()));
 
         turnoService.finalizarTurno(id, datos);
-        return ResponseEntity.ok().build(); // 200 OK
+        return ResponseEntity.ok().build();
+    }
+
+    private String guardarImagenYObtenerURL(MultipartFile imagen) {
+        String nombreArchivo = UUID.randomUUID() + "_" + imagen.getOriginalFilename();
+        Path ruta = Paths.get("uploads", nombreArchivo);
+        try {
+            Files.copy(imagen.getInputStream(), ruta, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/" + nombreArchivo;
+        } catch (IOException e) {
+            throw new RuntimeException("Error al guardar imagen", e);
+        }
     }
 
 
@@ -117,6 +144,20 @@ public class TurnoController {
     public ResponseEntity<?> cancelarPorTaller(@PathVariable Long turnoId) {
         turnoService.cancelarTurnoPorTaller(turnoId);
         return ResponseEntity.ok().build();
+    }
+
+
+    @GetMapping("/{id}/detalle")
+    public ResponseEntity<?> obtenerDetalleTurno(@PathVariable Long id) {
+        TurnoDetalleDTO detalle = turnoService.obtenerDetalleTurno(id);
+        return ResponseEntity.ok(detalle);
+    }
+
+
+    @GetMapping("/{turnoId}/calificacion")
+    public ResponseEntity<CalificacionDTO> obtenerCalificacion(@PathVariable Long turnoId) {
+        CalificacionDTO calificacion = turnoService.obtenerCalificacionDeTurno(turnoId);
+        return ResponseEntity.ok(calificacion);
     }
 
 
