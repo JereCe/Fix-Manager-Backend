@@ -1,9 +1,11 @@
 package com.equipo1.fix_manager.service;
 
 import com.equipo1.fix_manager.dto.CrearTallerDTO;
+import com.equipo1.fix_manager.dto.TallerDTO;
 import com.equipo1.fix_manager.dto.TallerResponseDTO;
 import com.equipo1.fix_manager.model.Agenda;
 import com.equipo1.fix_manager.model.Taller;
+import com.equipo1.fix_manager.model.TipoReparacion;
 import com.equipo1.fix_manager.model.UsuarioTaller;
 import com.equipo1.fix_manager.repository.ITallerRepository;
 import com.equipo1.fix_manager.repository.IUsuarioTallerRepository;
@@ -15,7 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TallerService implements ITallerService {
@@ -25,6 +29,9 @@ public class TallerService implements ITallerService {
 
     @Autowired
     private IUsuarioTallerRepository usuarioTallerRepository;
+
+
+
 
     @Override
     public TallerResponseDTO obtenerOTallerDeUsuario(Long usuarioId) {
@@ -57,6 +64,7 @@ public class TallerService implements ITallerService {
         taller.setNombre(datos.getNombre());
         taller.setDescripcion(datos.getDescripcion());
         taller.setUbicacion(datos.getUbicacion());
+        taller.setCiudad(datos.getCiudad());
 
         if (imagen != null && !imagen.isEmpty()) {
             File directorio = new File("uploads");
@@ -96,5 +104,52 @@ public class TallerService implements ITallerService {
                         t.getCantidadCalificaciones()
                 ))
                 .toList();
+    }
+
+
+    @Override
+    public List<TallerDTO> filtrar(String ciudad, TipoReparacion tipo) {
+        List<Taller> talleres;
+
+        if (ciudad != null && tipo != null) {
+            talleres = tallerRepository.findByCiudadAndTipoReparacionesContaining(ciudad, tipo);
+        } else if (ciudad != null) {
+            talleres = tallerRepository.findByCiudad(ciudad);
+        } else if (tipo != null) {
+            talleres = tallerRepository.findByTipoReparacionesContaining(tipo);
+        } else {
+            talleres = tallerRepository.findAll();
+        }
+
+        return talleres.stream().map(t -> {
+            TallerDTO dto = new TallerDTO();
+            dto.setId(t.getId());
+            dto.setNombre(t.getNombre());
+            dto.setDescripcion(t.getDescripcion());
+            dto.setCiudad(t.getCiudad());
+            dto.setUbicacion(t.getUbicacion());
+            dto.setImagenLogo(t.getImagenLogo());
+            dto.setTipoReparaciones(t.getTipoReparaciones());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void actualizarTiposReparacion(Long tallerId, List<String> tipos) {
+        UsuarioTaller usuario = usuarioTallerRepository.findById(tallerId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Taller taller = usuario.getTaller();
+        if (taller == null) {
+            throw new RuntimeException("El usuario no tiene taller");
+        }
+
+        Set<TipoReparacion> tipoSet = tipos.stream()
+                .map(String::toUpperCase)
+                .map(TipoReparacion::valueOf)
+                .collect(Collectors.toSet());
+
+        taller.setTipoReparaciones(tipoSet);
+        tallerRepository.save(taller);
     }
 }

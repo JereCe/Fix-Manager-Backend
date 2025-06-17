@@ -162,6 +162,7 @@ public class UsuarioTallerService implements IUsuarioTallerService {
         taller.setNombre(datos.getNombre());
         taller.setDescripcion(datos.getDescripcion());
         taller.setUbicacion(datos.getUbicacion());
+        taller.setCiudad(datos.getCiudad());
 
         if (imagenLogo != null && !imagenLogo.isEmpty()) {
             try {

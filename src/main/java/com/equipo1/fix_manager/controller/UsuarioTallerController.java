@@ -40,16 +40,19 @@ public class UsuarioTallerController {
             @RequestParam("nombre") String nombre,
             @RequestParam("descripcion") String descripcion,
             @RequestParam("ubicacion") String ubicacion,
+            @RequestParam("ciudad") String ciudad,
             @RequestPart("imagen") MultipartFile imagenLogo) {
 
         CrearTallerDTO datos = new CrearTallerDTO();
         datos.setNombre(nombre);
         datos.setDescripcion(descripcion);
         datos.setUbicacion(ubicacion);
+        datos.setCiudad(ciudad); // 👈 nuevo campo
 
         usuarioTallerService.crearTallerParaUsuario(id, datos, imagenLogo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 
 
     @GetMapping("/{id}/taller")
@@ -75,17 +78,18 @@ public class UsuarioTallerController {
             @RequestParam("nombre") String nombre,
             @RequestParam("descripcion") String descripcion,
             @RequestParam("ubicacion") String ubicacion,
+            @RequestParam("ciudad") String ciudad, // ← NUEVO
             @RequestPart(name = "imagen", required = false) MultipartFile imagenLogo) {
 
         CrearTallerDTO datos = new CrearTallerDTO();
         datos.setNombre(nombre);
         datos.setDescripcion(descripcion);
         datos.setUbicacion(ubicacion);
+        datos.setCiudad(ciudad); // ← NUEVO
 
         usuarioTallerService.actualizarTaller(id, datos, imagenLogo);
         return ResponseEntity.ok().build();
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioTallerResponseDTO> obtenerUsuTaller(@PathVariable Long id) {

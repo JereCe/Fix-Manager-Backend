@@ -142,7 +142,9 @@ public class UsuarioClienteService implements IUsuarioClienteService {
                         t.getDescripcion(),
                         t.getUbicacion(),
                         t.getImagenLogo(),
-                        t.getPromedioCalificacion()
+                        t.getPromedioCalificacion(),
+                        t.getCiudad(),
+                        null
                 ))
                 .toList();
     }

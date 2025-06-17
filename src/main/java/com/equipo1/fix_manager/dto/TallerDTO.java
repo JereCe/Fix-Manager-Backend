@@ -1,13 +1,14 @@
 package com.equipo1.fix_manager.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import com.equipo1.fix_manager.model.TipoReparacion;
+import lombok.*;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @Getter@Setter
+@NoArgsConstructor
 public class TallerDTO {
     private Long id;
     private String nombre;
@@ -15,4 +16,10 @@ public class TallerDTO {
     private String ubicacion;
     private String imagenLogo;
     private Double promedioCalificacion;
+
+    private String ciudad;
+    private Set<TipoReparacion> tipoReparaciones;
+
+
+
 }

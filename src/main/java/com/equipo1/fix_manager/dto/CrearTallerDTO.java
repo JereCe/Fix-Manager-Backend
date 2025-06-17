@@ -9,4 +9,6 @@ public class CrearTallerDTO {
     private String descripcion;
     private String ubicacion;
     private String imagenLogo;
+
+    private  String ciudad;
 }
