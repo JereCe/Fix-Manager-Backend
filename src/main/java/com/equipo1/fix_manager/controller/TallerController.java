@@ -39,10 +39,10 @@ public class TallerController {
     }
 
     @GetMapping("/filtrar")
-    public ResponseEntity<List<TallerDTO>> filtrarTalleres(
+    public ResponseEntity<List<TallerResponseDTO>> filtrarTalleres(
             @RequestParam(required = false) String ciudad,
             @RequestParam(required = false) TipoReparacion tipo) {
-        List<TallerDTO> talleresFiltrados = tallerService.filtrar(ciudad, tipo);
+        List<TallerResponseDTO> talleresFiltrados = tallerService.filtrarConCalificacion(ciudad, tipo);
         return ResponseEntity.ok(talleresFiltrados);
     }
 

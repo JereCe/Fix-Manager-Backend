@@ -48,7 +48,8 @@ public class TallerService implements ITallerService {
                 taller.getUbicacion(),
                 taller.getImagenLogo(),
                 taller.getPromedioCalificacion(),
-                taller.getCantidadCalificaciones()
+                taller.getCantidadCalificaciones(),
+                taller.getCiudad()
         );
     }
 
@@ -101,7 +102,8 @@ public class TallerService implements ITallerService {
                         t.getUbicacion(),
                         t.getImagenLogo(),
                         t.getPromedioCalificacion(),
-                        t.getCantidadCalificaciones()
+                        t.getCantidadCalificaciones(),
+                        t.getCiudad()
                 ))
                 .toList();
     }
@@ -151,5 +153,31 @@ public class TallerService implements ITallerService {
 
         taller.setTipoReparaciones(tipoSet);
         tallerRepository.save(taller);
+    }
+
+    @Override
+    public List<TallerResponseDTO> filtrarConCalificacion(String ciudad, TipoReparacion tipo) {
+        List<Taller> talleres;
+
+        if (ciudad != null && tipo != null) {
+            talleres = tallerRepository.findByCiudadAndTipoReparacionesContaining(ciudad, tipo);
+        } else if (ciudad != null) {
+            talleres = tallerRepository.findByCiudad(ciudad);
+        } else if (tipo != null) {
+            talleres = tallerRepository.findByTipoReparacionesContaining(tipo);
+        } else {
+            talleres = tallerRepository.findAll();
+        }
+
+        return talleres.stream().map(t -> new TallerResponseDTO(
+                t.getId(),
+                t.getNombre(),
+                t.getDescripcion(),
+                t.getUbicacion(),
+                t.getImagenLogo(),
+                t.getPromedioCalificacion(),
+                t.getCantidadCalificaciones(),
+                t.getCiudad()
+        )).toList();
     }
 }

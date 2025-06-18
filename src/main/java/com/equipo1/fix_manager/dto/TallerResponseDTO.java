@@ -13,9 +13,9 @@ public class TallerResponseDTO {
     private String imagenLogo;
     private Double promedioCalificacion;
     private Long cantidadCalificaciones;
+    private String ciudad;
 
-
-    public TallerResponseDTO(Long id, String nombre, String descripcion, String ubicacion, String imagenLogo, Double promedioCalificacion, Long cantidadCalificaciones) {
+    public TallerResponseDTO(Long id, String nombre, String descripcion, String ubicacion, String imagenLogo, Double promedioCalificacion, Long cantidadCalificaciones, String ciudad) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -23,5 +23,6 @@ public class TallerResponseDTO {
         this.imagenLogo = imagenLogo;
         this.promedioCalificacion = promedioCalificacion;
         this.cantidadCalificaciones = cantidadCalificaciones;
+        this.ciudad = ciudad;
     }
 }

@@ -125,7 +125,11 @@ public class TurnoService  implements ITurnoService{
     }
     @Override
     public List<TurnoPendienteTallerDTO> obtenerTurnosPendientesDelTaller(Long tallerId) {
-        List<Turno> turnos = turnoRepo.findByAgenda_Taller_IdAndEstadoOrderByFechaAscHoraAsc(tallerId, Estado.PENDIENTE);
+        List<Turno> turnos = turnoRepo.findByAgenda_Taller_IdAndEstadoAndDisponibilidadOrderByFechaAscHoraAsc(
+                tallerId,
+                Estado.PENDIENTE,
+                DisponibilidadTurno.RESERVADO
+        );
 
         return turnos.stream().map(t -> new TurnoPendienteTallerDTO(
                 t.getId(),
