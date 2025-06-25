@@ -28,7 +28,16 @@ public class TallerController {
 
 
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity<TallerResponseDTO> obtenerTallerPorId(@PathVariable Long id) {
+        TallerResponseDTO dto = tallerService.obtenerTallerPorId(id);
 
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(dto);
+    }
 
 
 
@@ -39,10 +48,10 @@ public class TallerController {
     }
 
     @GetMapping("/filtrar")
-    public ResponseEntity<List<TallerResponseDTO>> filtrarTalleres(
+    public ResponseEntity<List<TallerDTO>> filtrarTalleres(
             @RequestParam(required = false) String ciudad,
             @RequestParam(required = false) TipoReparacion tipo) {
-        List<TallerResponseDTO> talleresFiltrados = tallerService.filtrarConCalificacion(ciudad, tipo);
+        List<TallerDTO> talleresFiltrados = tallerService.filtrar(ciudad, tipo);
         return ResponseEntity.ok(talleresFiltrados);
     }
 

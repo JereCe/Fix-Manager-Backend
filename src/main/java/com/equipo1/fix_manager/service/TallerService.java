@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -132,6 +133,7 @@ public class TallerService implements ITallerService {
             dto.setUbicacion(t.getUbicacion());
             dto.setImagenLogo(t.getImagenLogo());
             dto.setTipoReparaciones(t.getTipoReparaciones());
+            dto.setPromedioCalificacion(t.getPromedioCalificacion());
             return dto;
         }).collect(Collectors.toList());
     }
@@ -155,29 +157,25 @@ public class TallerService implements ITallerService {
         tallerRepository.save(taller);
     }
 
+
     @Override
-    public List<TallerResponseDTO> filtrarConCalificacion(String ciudad, TipoReparacion tipo) {
-        List<Taller> talleres;
+    public TallerResponseDTO obtenerTallerPorId(Long id) {
+        Optional<Taller> optional = tallerRepository.findById(id);
 
-        if (ciudad != null && tipo != null) {
-            talleres = tallerRepository.findByCiudadAndTipoReparacionesContaining(ciudad, tipo);
-        } else if (ciudad != null) {
-            talleres = tallerRepository.findByCiudad(ciudad);
-        } else if (tipo != null) {
-            talleres = tallerRepository.findByTipoReparacionesContaining(tipo);
-        } else {
-            talleres = tallerRepository.findAll();
-        }
+        if (optional.isEmpty()) return null;
 
-        return talleres.stream().map(t -> new TallerResponseDTO(
-                t.getId(),
-                t.getNombre(),
-                t.getDescripcion(),
-                t.getUbicacion(),
-                t.getImagenLogo(),
-                t.getPromedioCalificacion(),
-                t.getCantidadCalificaciones(),
-                t.getCiudad()
-        )).toList();
+        Taller taller = optional.get();
+
+        return new TallerResponseDTO(
+                taller.getId(),
+                taller.getNombre(),
+                taller.getDescripcion(),
+                taller.getUbicacion(),
+                taller.getImagenLogo(),
+                taller.getPromedioCalificacion(),
+                taller.getCantidadCalificaciones(),
+                taller.getCiudad()
+
+        );
     }
 }

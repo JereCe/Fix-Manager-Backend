@@ -20,7 +20,8 @@ public interface ITallerService {
 
     void actualizarTiposReparacion(Long tallerId, List<String> tipos);
 
-    List<TallerResponseDTO> filtrarConCalificacion(String ciudad, TipoReparacion tipo);
+
+    TallerResponseDTO obtenerTallerPorId(Long id);
 
 
 }

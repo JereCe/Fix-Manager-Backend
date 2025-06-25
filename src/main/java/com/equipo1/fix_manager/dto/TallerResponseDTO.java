@@ -15,6 +15,10 @@ public class TallerResponseDTO {
     private Long cantidadCalificaciones;
     private String ciudad;
 
+    public TallerResponseDTO() {
+    }
+
+
     public TallerResponseDTO(Long id, String nombre, String descripcion, String ubicacion, String imagenLogo, Double promedioCalificacion, Long cantidadCalificaciones, String ciudad) {
         this.id = id;
         this.nombre = nombre;
